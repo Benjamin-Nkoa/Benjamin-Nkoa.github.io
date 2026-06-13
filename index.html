@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Benjamin NKOA — Algo Trader &amp; MQL5 Developer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@300;400;500;600&family=Playfair+Display:wght@700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg:        #0B0C0E;
+      --surface:   #111316;
+      --border:    #1E2126;
+      --border-hi: #2C3038;
+      --gold:      #C9A84C;
+      --gold-dim:  #7A6330;
+      --text:      #E8E6E1;
+      --muted:     #6B7280;
+      --tag-bg:    #161A1F;
+      --font-display: 'Playfair Display', Georgia, serif;
+      --font-body:    'Inter', system-ui, sans-serif;
+      --font-mono:    'IBM Plex Mono', 'Courier New', monospace;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-body);
+      font-size: 15px;
+      line-height: 1.7;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .container { max-width: 820px; margin: 0 auto; padding: 0 24px; }
+    section { padding: 80px 0; border-top: 1px solid var(--border); }
+    section:first-of-type { border-top: none; }
+
+    /* NAV */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      background: rgba(11,12,14,0.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+    nav .container { display: flex; align-items: center; justify-content: space-between; height: 56px; }
+    .nav-logo { font-family: var(--font-mono); font-size: 13px; color: var(--gold); letter-spacing: 0.04em; text-decoration: none; }
+    .nav-links { display: flex; gap: 20px; list-style: none; align-items: center; }
+    .nav-links a { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); text-decoration: none; transition: color 0.2s; }
+    .nav-links a:hover { color: var(--text); }
+
+    /* LANG SWITCH */
+    .lang-switch {
+      display: flex;
+      gap: 0;
+      border: 1px solid var(--border-hi);
+      border-radius: 2px;
+      overflow: hidden;
+      margin-left: 8px;
+    }
+    .lang-btn {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      padding: 5px 10px;
+      background: transparent;
+      color: var(--muted);
+      border: none;
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s;
+    }
+    .lang-btn.active { background: var(--gold); color: var(--bg); }
+    .lang-btn:not(.active):hover { color: var(--text); }
+
+    /* HERO */
+    #hero { padding: 160px 0 96px; border-top: none; }
+    .hero-top { display: flex; align-items: center; gap: 32px; margin-bottom: 32px; }
+    .profile-pic { width: 96px; height: 96px; border-radius: 50%; object-fit: cover; border: 2px solid var(--border-hi); flex-shrink: 0; }
+    .hero-eyebrow { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gold); margin-bottom: 12px; }
+    .hero-name { font-family: var(--font-display); font-size: clamp(40px,6vw,64px); font-weight: 700; line-height: 1.08; color: var(--text); margin-bottom: 12px; }
+    .hero-title { font-family: var(--font-display); font-size: clamp(20px,3vw,28px); font-weight: 700; color: var(--gold); margin-bottom: 32px; }
+    .hero-body { max-width: 560px; color: var(--muted); font-size: 15px; line-height: 1.8; margin-bottom: 40px; }
+    .hero-rule { font-family: var(--font-mono); font-size: 13px; color: var(--gold-dim); border-left: 2px solid var(--gold-dim); padding-left: 14px; margin-bottom: 40px; font-style: italic; }
+    .stack-pills { display: flex; flex-wrap: wrap; gap: 8px; }
+    .pill { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.06em; background: var(--tag-bg); border: 1px solid var(--border-hi); color: var(--muted); padding: 5px 12px; border-radius: 2px; }
+
+    /* SECTION LABEL */
+    .section-label { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gold); margin-bottom: 48px; display: flex; align-items: center; gap: 16px; }
+    .section-label::after { content: ''; flex: 1; height: 1px; background: var(--border-hi); }
+
+    /* ABOUT */
+    .about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0; border: 1px solid var(--border-hi); }
+    .about-main { padding: 36px; border-right: 1px solid var(--border-hi); }
+    .about-main p { color: var(--muted); margin-bottom: 16px; font-size: 14px; }
+    .about-main p:last-child { margin-bottom: 0; }
+    .about-main ul { list-style: none; margin: 16px 0; }
+    .about-main ul li { color: var(--muted); font-size: 14px; padding: 4px 0 4px 20px; position: relative; }
+    .about-main ul li::before { content: '→'; position: absolute; left: 0; color: var(--gold-dim); font-family: var(--font-mono); }
+    .about-main strong { color: var(--text); font-weight: 500; }
+    .about-meta { padding: 36px; display: flex; flex-direction: column; gap: 24px; }
+    .about-stat { border-bottom: 1px solid var(--border); padding-bottom: 20px; }
+    .about-stat:last-child { border-bottom: none; padding-bottom: 0; }
+    .stat-label { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gold-dim); margin-bottom: 6px; }
+    .stat-value { font-size: 14px; color: var(--text); font-weight: 500; }
+
+    /* PROJECT CARDS */
+    .projects-list { display: flex; flex-direction: column; gap: 2px; }
+    .project-card { background: var(--surface); border: 1px solid var(--border); overflow: hidden; transition: border-color 0.2s; }
+    .project-card:hover { border-color: var(--border-hi); }
+    .project-header { display: flex; align-items: flex-start; justify-content: space-between; padding: 28px 32px; cursor: pointer; gap: 16px; }
+    .project-header-left { flex: 1; }
+    .project-tag { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gold-dim); margin-bottom: 8px; }
+    .project-name { font-family: var(--font-display); font-size: 22px; color: var(--text); margin-bottom: 6px; }
+    .project-subtitle { font-size: 13px; color: var(--muted); font-style: italic; }
+    .project-toggle { font-family: var(--font-mono); font-size: 18px; color: var(--gold-dim); transition: transform 0.3s; flex-shrink: 0; margin-top: 4px; }
+    .project-card.open .project-toggle { transform: rotate(45deg); }
+    .project-body { display: none; padding: 0 32px 32px; border-top: 1px solid var(--border); }
+    .project-card.open .project-body { display: block; }
+    .project-desc { color: var(--muted); font-size: 14px; margin: 24px 0; line-height: 1.8; }
+
+    /* TIERS */
+    .tier-list { display: flex; flex-direction: column; gap: 16px; margin: 20px 0; }
+    .tier { border: 1px solid var(--border-hi); padding: 20px 24px; }
+    .tier-name { font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.08em; color: var(--gold); margin-bottom: 8px; }
+    .tier p { font-size: 13px; color: var(--muted); line-height: 1.7; }
+    .tier .stat-highlight { display: inline-block; font-family: var(--font-mono); font-size: 12px; color: var(--text); background: var(--tag-bg); border: 1px solid var(--border-hi); padding: 2px 8px; margin-top: 8px; }
+
+    /* STEPS */
+    .steps { display: flex; flex-direction: column; gap: 0; margin: 20px 0; }
+    .step { display: grid; grid-template-columns: 40px 1fr; gap: 16px; padding: 20px 0; border-bottom: 1px solid var(--border); }
+    .step:last-child { border-bottom: none; }
+    .step-num { font-family: var(--font-mono); font-size: 11px; color: var(--gold-dim); padding-top: 2px; }
+    .step-title { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 6px; }
+    .step-desc { font-size: 13px; color: var(--muted); line-height: 1.7; }
+
+    /* TABLE */
+    .strategy-table { width: 100%; border-collapse: collapse; font-size: 12px; margin: 20px 0; }
+    .strategy-table th { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gold-dim); text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--border-hi); }
+    .strategy-table td { color: var(--muted); padding: 10px 12px; border-bottom: 1px solid var(--border); vertical-align: top; }
+    .strategy-table tr:last-child td { border-bottom: none; }
+
+    /* TAGS */
+    .project-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 24px; padding-top: 24px; border-top: 1px solid var(--border); }
+
+    /* PERF */
+    .perf-strip { display: grid; grid-template-columns: repeat(3,1fr); border: 1px solid var(--border-hi); margin: 20px 0; }
+    .perf-cell { padding: 20px 24px; border-right: 1px solid var(--border-hi); }
+    .perf-cell:last-child { border-right: none; }
+    .perf-num { font-family: var(--font-mono); font-size: 22px; color: var(--gold); font-weight: 500; margin-bottom: 4px; }
+    .perf-label { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+
+    /* CONTACT */
+    .contact-block { border: 1px solid var(--border-hi); padding: 48px; display: flex; flex-direction: column; gap: 32px; }
+    .contact-body p { color: var(--muted); font-size: 14px; line-height: 1.8; }
+    .contact-body strong { color: var(--text); }
+    .contact-links { display: flex; gap: 12px; flex-wrap: wrap; }
+    .contact-btn { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text); text-decoration: none; border: 1px solid var(--border-hi); padding: 12px 24px; transition: border-color 0.2s, color 0.2s; display: inline-block; }
+    .contact-btn:hover { border-color: var(--gold); color: var(--gold); }
+    .contact-btn.primary { border-color: var(--gold); color: var(--gold); }
+    .contact-btn.primary:hover { background: var(--gold); color: var(--bg); }
+
+    /* FOOTER */
+    footer { border-top: 1px solid var(--border); padding: 32px 0; }
+    footer .container { display: flex; justify-content: space-between; align-items: center; }
+    .footer-name { font-family: var(--font-mono); font-size: 11px; color: var(--muted); }
+    .footer-company { font-family: var(--font-mono); font-size: 11px; color: var(--gold-dim); }
+
+    /* REVEAL */
+    .reveal { opacity: 0; transform: translateY(20px); transition: opacity 0.5s ease, transform 0.5s ease; }
+    .reveal.visible { opacity: 1; transform: none; }
+    @media (prefers-reduced-motion: reduce) { .reveal { opacity: 1; transform: none; } }
+
+    /* BACKTEST IMAGE */
+    .backtest-img { width: 100%; border: 1px solid var(--border-hi); margin: 0 0 20px; display: block; }
+
+    /* RESPONSIVE */
+    @media (max-width: 640px) {
+      .hero-top { flex-direction: column; align-items: flex-start; gap: 20px; }
+      .about-grid { grid-template-columns: 1fr; }
+      .about-main { border-right: none; border-bottom: 1px solid var(--border-hi); }
+      .perf-strip { grid-template-columns: 1fr 1fr; }
+      .perf-cell:nth-child(2) { border-right: none; }
+      .perf-cell:nth-child(3) { border-top: 1px solid var(--border-hi); grid-column: span 2; border-right: none; }
+      .contact-block { padding: 28px 24px; }
+      nav .nav-links { gap: 12px; }
+      .project-header { padding: 20px; }
+      .project-body { padding: 0 20px 24px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <div class="container">
+      <a class="nav-logo" href="#hero">Benjamin NKOA</a>
+      <ul class="nav-links">
+        <li><a href="#about" data-en="About" data-fr="À propos">About</a></li>
+        <li><a href="#projects" data-en="Projects" data-fr="Projets">Projects</a></li>
+        <li><a href="#contact" data-en="Contact" data-fr="Contact">Contact</a></li>
+        <li>
+          <div class="lang-switch">
+            <button class="lang-btn active" onclick="setLang('en')">EN</button>
+            <button class="lang-btn" onclick="setLang('fr')">FR</button>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section id="hero">
+    <div class="container">
+      <div class="hero-top">
+        <img src="profilepic.png" alt="Benjamin NKOA" class="profile-pic" />
+        <div>
+          <p class="hero-eyebrow" data-en="Founder, Finova Capital" data-fr="Fondateur, Finova Capital">Founder, Finova Capital</p>
+          <h1 class="hero-name">Benjamin NKOA</h1>
+          <p class="hero-title" data-en="Algo Trader &amp; MQL5 Developer" data-fr="Trader Algorithmique &amp; Développeur MQL5">Algo Trader &amp; MQL5 Developer</p>
+        </div>
+      </div>
+      <p class="hero-body"
+        data-en="I specialize in market structure based strategies. I help traders automate their trading system, verify the edge of their strategy, and optimize it for greater results. Clients who know precisely what their trading system is are my absolute priority."
+        data-fr="Je me spécialise dans les stratégies basées sur la structure de marché. J'aide les traders à automatiser leur système de trading, à vérifier l'edge de leur stratégie et à l'optimiser pour de meilleurs résultats. Les clients qui savent précisément ce qu'est leur système de trading sont ma priorité absolue.">
+        I specialize in market structure based strategies. I help traders automate their trading system, verify the edge of their strategy, and optimize it for greater results. Clients who know precisely what their trading system is are my absolute priority.
+      </p>
+      <p class="hero-rule"
+        data-en="Logic first, code second."
+        data-fr="La logique d'abord, le code ensuite.">
+        Logic first, code second.
+      </p>
+      <div class="stack-pills">
+        <span class="pill">MQL5</span>
+        <span class="pill">MT5</span>
+        <span class="pill">Python</span>
+        <span class="pill">ONNX</span>
+        <span class="pill">XGBoost</span>
+        <span class="pill">Live Trading</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ABOUT -->
+  <section id="about">
+    <div class="container">
+      <p class="section-label" data-en="About" data-fr="À propos">About</p>
+      <div class="about-grid reveal">
+        <div class="about-main">
+          <p data-en="As a Price Action trader, I build tools I trade with myself. My work spans:" data-fr="En tant que trader Price Action, je construis les outils avec lesquels je trade moi-même. Mon travail couvre :">As a Price Action trader, I build tools I trade with myself. My work spans:</p>
+          <ul>
+            <li data-en="Session-based Expert Advisors" data-fr="Expert Advisors basés sur les sessions">Session-based Expert Advisors</li>
+            <li data-en="Breakout systems" data-fr="Systèmes de cassure">Breakout systems</li>
+            <li data-en="Fibonacci retracement automation" data-fr="Automatisation du retracement de Fibonacci">Fibonacci retracement automation</li>
+            <li data-en="AI-enhanced signal scoring" data-fr="Scoring de signaux amélioré par l'IA">AI-enhanced signal scoring</li>
+          </ul>
+          <p data-en="I take on well-structured EA development projects. If you have a strategy and need it coded properly by someone who understands both trading and programming: &lt;strong&gt;reach out&lt;/strong&gt;."
+             data-fr="Je prends en charge des projets de développement d'EA bien structurés. Si vous avez une stratégie et que vous avez besoin qu'elle soit codée correctement par quelqu'un qui comprend à la fois le trading et la programmation : &lt;strong&gt;contactez-moi&lt;/strong&gt;.">
+            I take on well-structured EA development projects. If you have a strategy and need it coded properly by someone who understands both trading and programming: <strong>reach out</strong>.
+          </p>
+          <p style="margin-top:20px;font-style:italic;color:var(--gold-dim);font-size:13px;"
+            data-en="If I wouldn't use it, I'm not selling it."
+            data-fr="Si je ne l'utiliserais pas moi-même, je ne le vends pas.">
+            If I wouldn't use it, I'm not selling it.
+          </p>
+        </div>
+        <div class="about-meta">
+          <div class="about-stat">
+            <p class="stat-label" data-en="Company" data-fr="Société">Company</p>
+            <p class="stat-value">Finova Capital</p>
+          </div>
+          <div class="about-stat">
+            <p class="stat-label" data-en="Platform" data-fr="Plateforme">Platform</p>
+            <p class="stat-value">MetaTrader 5</p>
+          </div>
+          <div class="about-stat">
+            <p class="stat-label" data-en="Primary Market" data-fr="Marchés principaux">Primary Market</p>
+            <p class="stat-value">XAUUSD, Forex, Crypto, Equities</p>
+          </div>
+          <div class="about-stat">
+            <p class="stat-label" data-en="Specialty" data-fr="Spécialité">Specialty</p>
+            <p class="stat-value" data-en="Price Action; EA Development; ML Integration" data-fr="Price Action; Développement EA; Intégration ML">Price Action; EA Development; ML Integration</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROJECTS -->
+  <section id="projects">
+    <div class="container">
+      <p class="section-label" data-en="Recent Projects" data-fr="Projets récents">Recent Projects</p>
+      <div class="projects-list">
+
+        <!-- LBS -->
+        <div class="project-card reveal" id="card-lbs">
+          <div class="project-header" onclick="toggleCard('card-lbs')">
+            <div class="project-header-left">
+              <p class="project-tag">EA Suite, XAUUSD, Forex, Crypto</p>
+              <h2 class="project-name">LBS : Layered Breakout System</h2>
+              <p class="project-subtitle"
+                data-en="Inspired by &lt;a href='http://www.youtube.com/@BenjaminDeleuzeTrading' target='_blank' style='color:var(--gold-dim);text-decoration:underline;'&gt;Benjamin Deleuze&lt;/a&gt;"
+                data-fr="Inspiré de &lt;a href='http://www.youtube.com/@BenjaminDeleuzeTrading' target='_blank' style='color:var(--gold-dim);text-decoration:underline;'&gt;Benjamin Deleuze&lt;/a&gt;">
+                Inspired by <a href="http://www.youtube.com/@BenjaminDeleuzeTrading" target="_blank" style="color:var(--gold-dim);text-decoration:underline;">Benjamin Deleuze</a>
+              </p>
+            </div>
+            <span class="project-toggle">+</span>
+          </div>
+          <div class="project-body">
+            <p class="project-desc"
+              data-en="A suite of Expert Advisors developed and commercialized by Finova Capital. Built on a resistance breakout logic designed and optimized for XAUUSD, with proven robustness across forex, crypto, and equity markets."
+              data-fr="Une suite d'Expert Advisors développée et commercialisée par Finova Capital. Construite sur une logique de cassure de résistance conçue et optimisée pour le XAUUSD, avec une robustesse éprouvée sur les marchés forex, crypto et actions.">
+              A suite of Expert Advisors developed and commercialized by Finova Capital. Built on a resistance breakout logic designed and optimized for XAUUSD, with proven robustness across forex, crypto, and equity markets.
+            </p>
+            <div class="tier-list">
+              <div class="tier">
+                <p class="tier-name" data-en="LBS Edge — AI Enhanced" data-fr="LBS Edge — Filtrage par IA">LBS Edge — AI Enhanced</p>
+                <p data-en="The AI filter analyzes market conditions before each trade to eliminate false signals. Trained from 2005 to 2023 on over 3,000 signals and forward-tested through 2026."
+                   data-fr="Le filtre IA analyse les conditions de marché avant chaque trade pour éliminer les faux signaux. Entraîné de 2005 à 2023 sur plus de 3 000 signaux et testé en conditions réelles jusqu'en 2026.">
+                  The AI filter analyzes market conditions before each trade to eliminate false signals. Trained from 2005 to 2023 on over 3,000 signals and forward-tested through 2026.</p>
+                <span class="stat-highlight">DD: 15% → 7% &nbsp;|&nbsp; Return: +345% → +722%</span>
+              </div>
+              <div class="tier">
+                <p class="tier-name" data-en="LBS Pro — Advanced Risk" data-fr="LBS Pro — Gestion du risque avancée">LBS Pro — Advanced Risk</p>
+                <p data-en="Customizable risk management including a correlation filter and news filter against toxic announcement volatility. Integrated Telegram bot for remote EA control and live monitoring."
+                   data-fr="Gestion du risque personnalisable incluant un filtre de corrélation et un filtre d'actualités contre la volatilité des annonces économiques. Bot Telegram intégré pour le contrôle à distance de l'EA et le suivi en temps réel.">
+                  Customizable risk management including a correlation filter and news filter against toxic announcement volatility. Integrated Telegram bot for remote EA control and live monitoring.</p>
+              </div>
+              <div class="tier">
+                <p class="tier-name" data-en="LBS Core — Essential Strategy" data-fr="LBS Core — Stratégie essentielle">LBS Core — Essential Strategy</p>
+                <p data-en="The strategy in its most essential form. 7 years of backtesting, robust across 4 markets."
+                   data-fr="La stratégie dans sa forme la plus essentielle. 7 ans de backtesting, robuste sur 4 marchés.">
+                  The strategy in its most essential form. 7 years of backtesting, robust across 4 markets.</p>
+                <span class="stat-highlight">+1,330% on XAUUSD over 7 years</span>
+              </div>
+            </div>
+            <div class="project-tags">
+              <span class="pill">XAUUSD</span>
+              <span class="pill">MT5</span>
+              <span class="pill">Price Action</span>
+              <span class="pill">AI Enhanced</span>
+              <span class="pill">Telegram Bot</span>
+            </div>
+            <p style="margin-top:20px;font-size:13px;">
+              <a class="lbs-presentation-link"
+                 href="https://drive.google.com/file/d/19CpSykcYV80dsz7TSs75PK6BL23ezR2v/view?usp=drivesdk"
+                 target="_blank"
+                 style="color:var(--gold);text-decoration:none;"
+                 data-en="→ Full Presentation"
+                 data-fr="→ Présentation complète">→ Full Presentation</a>
+            </p>
+          </div>
+        </div>
+
+        <!-- Kingsley -->
+        <div class="project-card reveal" id="card-kingsley">
+          <div class="project-header" onclick="toggleCard('card-kingsley')">
+            <div class="project-header-left">
+              <p class="project-tag" data-en="EA, Session-Based" data-fr="EA, Basé sur les sessions">EA, Session-Based</p>
+              <h2 class="project-name">Kingsley</h2>
+              <p class="project-subtitle"
+                data-en="New York Session Breakout EA"
+                data-fr="EA de cassure sur la session de New York">New York Session Breakout EA</p>
+            </div>
+            <span class="project-toggle">+</span>
+          </div>
+          <div class="project-body">
+            <p class="project-desc"
+              data-en="Captures the NY open breakout with precision. Reference candle at first session candle on XAUUSD, RSI + EMA confluence, one disciplined trade per day. Full Kingsley presentation and backtest reports available &lt;a href='https://www.mql5.com/en/market/product/162421' target='_blank' style='color:var(--gold);text-decoration:underline;'&gt;here&lt;/a&gt;."
+              data-fr="Capture la cassure de l'ouverture de New York avec précision. Bougie de référence sur la première bougie de session sur le XAUUSD, confluence RSI + EMA, un trade discipliné par jour. Présentation complète de Kingsley et rapports de backtest disponibles &lt;a href='https://www.mql5.com/en/market/product/162421' target='_blank' style='color:var(--gold);text-decoration:underline;'&gt;ici&lt;/a&gt;.">
+              Captures the NY open breakout with precision. Reference candle at first session candle on XAUUSD, RSI + EMA confluence, one disciplined trade per day. Full Kingsley presentation and backtest reports available <a href="https://www.mql5.com/en/market/product/162421" target="_blank" style="color:var(--gold);text-decoration:underline;">here</a>.
+            </p>
+            <img src="kingsleyreport.png" alt="Kingsley Backtest Report" class="backtest-img" />
+            <div class="perf-strip">
+              <div class="perf-cell">
+                <p class="perf-num">2.03</p>
+                <p class="perf-label" data-en="Profit Factor" data-fr="Facteur de profit">Profit Factor</p>
+              </div>
+              <div class="perf-cell">
+                <p class="perf-num">10.47</p>
+                <p class="perf-label" data-en="Sharpe Ratio" data-fr="Ratio de Sharpe">Sharpe Ratio</p>
+              </div>
+              <div class="perf-cell">
+                <p class="perf-num">4.78%</p>
+                <p class="perf-label" data-en="Max Drawdown" data-fr="Drawdown maximum">Max Drawdown</p>
+              </div>
+            </div>
+            <div class="steps">
+              <div class="step">
+                <span class="step-num">01</span>
+                <div class="step-content">
+                  <p class="step-title" data-en="Reference Candle Detection" data-fr="Détection de la bougie de référence">Reference Candle Detection</p>
+                  <p class="step-desc"
+                    data-en="At precisely 14:30 GMT, Kingsley captures the opening M15 candle (OHLC and midpoint). This candle defines the breakout levels for the entire session."
+                    data-fr="À exactement 14h30 GMT, Kingsley capture la bougie M15 d'ouverture (OHLC et point médian). Cette bougie définit les niveaux de cassure pour toute la session.">
+                    At precisely 14:30 GMT, Kingsley captures the opening M15 candle (OHLC and midpoint). This candle defines the breakout levels for the entire session.</p>
+                </div>
+              </div>
+              <div class="step">
+                <span class="step-num">02</span>
+                <div class="step-content">
+                  <p class="step-title" data-en="M5 Breakout Confirmation" data-fr="Confirmation de cassure M5">M5 Breakout Confirmation</p>
+                  <p class="step-desc"
+                    data-en="The EA scans M5 bars for a clean close above the candle high (bullish) or low (bearish), followed by a confirming bar in the same direction."
+                    data-fr="L'EA scanne les bougies M5 à la recherche d'une clôture nette au-dessus du plus haut (haussier) ou en dessous du plus bas (baissier) de la bougie de référence, suivie d'une bougie de confirmation dans la même direction.">
+                    The EA scans M5 bars for a clean close above the candle high (bullish) or low (bearish), followed by a confirming bar in the same direction.</p>
+                </div>
+              </div>
+              <div class="step">
+                <span class="step-num">03</span>
+                <div class="step-content">
+                  <p class="step-title" data-en="One Trade Per Day" data-fr="Un trade par jour">One Trade Per Day</p>
+                  <p class="step-desc"
+                    data-en="The logic is hard-coded. One entry per session, per day. The EA stops scanning once a trade is taken and focuses on trade management. Forced discipline, no overtrading."
+                    data-fr="La logique est codée en dur. Une seule entrée par session, par jour. L'EA arrête de scanner une fois qu'un trade est pris et se concentre sur la gestion du trade. Discipline imposée, pas de surtrading.">
+                    The logic is hard-coded. One entry per session, per day. The EA stops scanning once a trade is taken and focuses on trade management. Forced discipline, no overtrading.</p>
+                </div>
+              </div>
+            </div>
+            <table class="strategy-table">
+              <thead>
+                <tr>
+                  <th data-en="Session" data-fr="Session">Session</th>
+                  <th data-en="Entry" data-fr="Entrée">Entry</th>
+                  <th data-en="Stop Loss" data-fr="Stop Loss">Stop Loss</th>
+                  <th data-en="Filters" data-fr="Filtres">Filters</th>
+                  <th data-en="Management" data-fr="Gestion">Management</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>NY Open</td>
+                  <td data-en="M5 Breakout + Confirm bar" data-fr="Cassure M5 + Bougie de confirmation">M5 Breakout + Confirm bar</td>
+                  <td data-en="Ref candle mid-range" data-fr="Milieu de la bougie de référence">Ref candle mid-range</td>
+                  <td>RSI + EMA + News</td>
+                  <td data-en="BreakEven + Trailing Stop" data-fr="BreakEven + Trailing Stop">BreakEven + Trailing Stop</td>
+                </tr>
+              </tbody>
+            </table>
+            <div class="project-tags">
+              <span class="pill">XAUUSD</span>
+              <span class="pill">MT5</span>
+              <span class="pill">FCR</span>
+              <span class="pill">NY Open</span>
+              <span class="pill">News Filter</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- SmartFib -->
+        <div class="project-card reveal" id="card-smartfib">
+          <div class="project-header" onclick="toggleCard('card-smartfib')">
+            <div class="project-header-left">
+              <p class="project-tag" data-en="EA, Multi-Asset, Internal Project" data-fr="EA, Multi-Actifs, Projet interne">EA, Multi-Asset, Internal Project</p>
+              <h2 class="project-name">SmartFib</h2>
+              <p class="project-subtitle"
+                data-en="Fibonacci Retracement &amp; Order Block EA"
+                data-fr="EA Retracement de Fibonacci &amp; Order Block">Fibonacci Retracement &amp; Order Block EA</p>
+            </div>
+            <span class="project-toggle">+</span>
+          </div>
+          <div class="project-body">
+            <p class="project-desc"
+              data-en="Fibonacci works, but not on random levels. SmartFib combines the 0.705-1 Fibonacci zone with Order Block detection to find entries where institutions are more likely to defend a level. Customizable HTF trend filter. Built for Finova Capital."
+              data-fr="Fibonacci fonctionne, mais pas sur des niveaux aléatoires. SmartFib combine la zone de Fibonacci 0.705-1 avec la détection d'Order Blocks pour trouver des entrées où les institutions sont plus susceptibles de défendre un niveau. Filtre de tendance HTF personnalisable. Construit pour Finova Capital.">
+              Fibonacci works, but not on random levels. SmartFib combines the 0.705-1 Fibonacci zone with Order Block detection to find entries where institutions are more likely to defend a level. Customizable HTF trend filter. Built for Finova Capital.
+            </p>
+            <img src="smartfibreport.png" alt="SmartFib Backtest Report" class="backtest-img" />
+            <div class="perf-strip">
+              <div class="perf-cell">
+                <p class="perf-num">1.36</p>
+                <p class="perf-label" data-en="Profit Factor" data-fr="Facteur de profit">Profit Factor</p>
+              </div>
+              <div class="perf-cell">
+                <p class="perf-num">3.78</p>
+                <p class="perf-label" data-en="Sharpe Ratio" data-fr="Ratio de Sharpe">Sharpe Ratio</p>
+              </div>
+              <div class="perf-cell">
+                <p class="perf-num">17.69%</p>
+                <p class="perf-label" data-en="Max Drawdown" data-fr="Drawdown maximum">Max Drawdown</p>
+              </div>
+            </div>
+            <div class="steps">
+              <div class="step">
+                <span class="step-num">01</span>
+                <div class="step-content">
+                  <p class="step-title" data-en="Swing High/Low Detection" data-fr="Détection des plus hauts/bas">Swing High/Low Detection</p>
+                  <p class="step-desc"
+                    data-en="SmartFib identifies significant swing highs and lows using a customizable ZigZag algorithm. These swings define the trend (HH-HL / LH-LL) and the Fibonacci measurement range."
+                    data-fr="SmartFib identifie les plus hauts et plus bas significatifs à l'aide d'un algorithme ZigZag personnalisable. Ces oscillations définissent la tendance (HH-HL / LH-LL) et la plage de mesure de Fibonacci.">
+                    SmartFib identifies significant swing highs and lows using a customizable ZigZag algorithm. These swings define the trend (HH-HL / LH-LL) and the Fibonacci measurement range.</p>
+                </div>
+              </div>
+              <div class="step">
+                <span class="step-num">02</span>
+                <div class="step-content">
+                  <p class="step-title" data-en="Fibonacci Level Calculation" data-fr="Calcul des niveaux de Fibonacci">Fibonacci Level Calculation</p>
+                  <p class="step-desc"
+                    data-en="From the most recent swings, SmartFib automatically calculates retracement levels, targeting specifically the 0.705-1 range, the last barrier for a rebound during a retracement."
+                    data-fr="À partir des oscillations les plus récentes, SmartFib calcule automatiquement les niveaux de retracement, ciblant spécifiquement la zone 0.705-1, dernière barrière avant un rebond lors d'un retracement.">
+                    From the most recent swings, SmartFib automatically calculates retracement levels, targeting specifically the 0.705-1 range, the last barrier for a rebound during a retracement.</p>
+                </div>
+              </div>
+              <div class="step">
+                <span class="step-num">03</span>
+                <div class="step-content">
+                  <p class="step-title" data-en="Order Block Detection" data-fr="Détection des Order Blocks">Order Block Detection</p>
+                  <p class="step-desc"
+                    data-en="Within the Fibonacci zone, the EA scans for Order Blocks (the last bearish candle before a bullish impulse, or vice versa) representing institutional interest areas."
+                    data-fr="Dans la zone de Fibonacci, l'EA recherche les Order Blocks (la dernière bougie baissière avant une impulsion haussière, ou vice versa) représentant les zones d'intérêt institutionnel.">
+                    Within the Fibonacci zone, the EA scans for Order Blocks (the last bearish candle before a bullish impulse, or vice versa) representing institutional interest areas.</p>
+                </div>
+              </div>
+            </div>
+            <table class="strategy-table">
+              <thead>
+                <tr>
+                  <th data-en="Condition" data-fr="Condition">Condition</th>
+                  <th data-en="Bullish Setup" data-fr="Configuration haussière">Bullish Setup</th>
+                  <th data-en="Bearish Setup" data-fr="Configuration baissière">Bearish Setup</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td data-en="Fibo Zone" data-fr="Zone Fibo">Fibo Zone</td><td>0.705 - 1</td><td>0.705 - 1</td></tr>
+                <tr><td>Order Block</td><td data-en="Bullish OB within zone" data-fr="OB haussier dans la zone">Bullish OB within zone</td><td data-en="Bearish OB within zone" data-fr="OB baissier dans la zone">Bearish OB within zone</td></tr>
+                <tr><td data-en="HTF Trend" data-fr="Tendance HTF">HTF Trend</td><td data-en="Bullish" data-fr="Haussière">Bullish</td><td data-en="Bearish" data-fr="Baissière">Bearish</td></tr>
+                <tr><td>R/R</td><td data-en="≥ 2 (customizable)" data-fr="≥ 2 (personnalisable)">≥ 2 (customizable)</td><td data-en="≥ 2 (customizable)" data-fr="≥ 2 (personnalisable)">≥ 2 (customizable)</td></tr>
+                <tr><td data-en="Entry Type" data-fr="Type d'entrée">Entry Type</td><td data-en="Buy limit" data-fr="Ordre d'achat limite">Buy limit</td><td data-en="Sell limit" data-fr="Ordre de vente limite">Sell limit</td></tr>
+              </tbody>
+            </table>
+            <div class="project-tags">
+              <span class="pill">Multi-Asset</span>
+              <span class="pill">MT5</span>
+              <span class="pill">SMC</span>
+              <span class="pill">Order Blocks</span>
+              <span class="pill">Fibonacci</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section id="contact">
+    <div class="container">
+      <p class="section-label" data-en="Contact &amp; Availability" data-fr="Contact &amp; Disponibilité">Contact &amp; Availability</p>
+      <div class="contact-block reveal">
+        <div class="contact-body">
+          <p data-en="I take on &lt;strong&gt;well-structured EA development projects&lt;/strong&gt;. If you have a strategy and need it coded properly by someone who understands both trading and programming, reach out."
+             data-fr="Je prends en charge des &lt;strong&gt;projets de développement d'EA bien structurés&lt;/strong&gt;. Si vous avez une stratégie et que vous avez besoin qu'elle soit codée correctement par quelqu'un qui comprend à la fois le trading et la programmation, contactez-moi.">
+            I take on <strong>well-structured EA development projects</strong>. If you have a strategy and need it coded properly by someone who understands both trading and programming, reach out.
+          </p>
+        </div>
+        <div class="contact-links">
+          <a href="http://mql5.com/en/users/finova_capital" target="_blank" class="contact-btn primary" data-en="MQL5 Profile" data-fr="Profil MQL5">MQL5 Profile</a>
+          <a href="mailto:benjaminnkoa47@gmail.com" class="contact-btn">benjaminnkoa47@gmail.com</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="container">
+      <span class="footer-name">Benjamin NKOA &copy; 2026</span>
+      <span class="footer-company">Finova Capital</span>
+    </div>
+  </footer>
+
+  <script>
+    // ACCORDION
+    function toggleCard(id) {
+      document.getElementById(id).classList.toggle('open');
+    }
+
+    // SCROLL REVEAL
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); }
+      });
+    }, { threshold: 0.1 });
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+    // LANG SWITCH
+    const LBS_LINKS = {
+      en: 'https://drive.google.com/file/d/19CpSykcYV80dsz7TSs75PK6BL23ezR2v/view?usp=drivesdk',
+      fr: 'https://drive.google.com/file/d/1k2BA1LxvG4JPAT9kQxM-Un43Mq3d0za2/view?usp=drivesdk'
+    };
+
+    function setLang(lang) {
+      // Update buttons
+      document.querySelectorAll('.lang-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.textContent.toLowerCase() === lang);
+      });
+
+      // Update html lang attribute
+      document.documentElement.lang = lang;
+
+      // Update all elements with data-en / data-fr
+      document.querySelectorAll('[data-en]').forEach(el => {
+        const val = el.getAttribute('data-' + lang);
+        if (val !== null) {
+          // Use innerHTML so links inside attributes render correctly
+          el.innerHTML = val;
+        }
+      });
+
+      // Update LBS presentation link href + text
+      const lbsLink = document.querySelector('.lbs-presentation-link');
+      if (lbsLink) {
+        lbsLink.href = LBS_LINKS[lang];
+        lbsLink.textContent = lang === 'fr' ? '→ Présentation complète' : '→ Full Presentation';
+      }
+    }
+  </script>
+</body>
+</html>
